@@ -14,5 +14,3 @@ if __name__ == "__main__":
     file = CryptFile(PATH, pv)
     file.encrypt()
     file.decrypt()
-    
-    input()
