@@ -2,5 +2,4 @@
 
 ### Dependencias :package:
 
-- RSA
--   python -m pip install rsa
+- RSA - python -m pip install rsa
