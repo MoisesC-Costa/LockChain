@@ -53,6 +53,9 @@ class CryptMessage:
                 data_segments.append(self.data[i:i + length_segment])
                 
         for segment in data_segments:
+            prefix = int.to_bytes(secrets.randbits(32*8), 32, 'big')
+            segment = prefix + segment
+            
             verificador = sha256(segment).digest()
             
             frame = verificador + segment
@@ -86,9 +89,8 @@ class CryptMessage:
             packet = int_bytes(calc)
             
             verificador = packet[:32]
-            frame = packet[-length_segment:]
-
-            data += frame
+            frame = packet[-(length_segment + 32):]
+            data += frame[-length_segment:]
         
         self.data = data
         return True
