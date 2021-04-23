@@ -1,5 +1,6 @@
+from logging import error
 from typing import Union
-from rsa import newkeys, key, PublicKey, PrivateKey
+from rsa import PublicKey, PrivateKey
 from os import PathLike
 from hashlib import sha256
 import secrets
@@ -47,7 +48,8 @@ class CryptMessage:
             return False
         
         lenght_key = length_int(self.key.n)
-        lenght_seg = lenght_key - 72
+        lenght_seg = lenght_key - 40
+        checksum = sha256(self.data).digest()
         data = b""
         
         for sep in range(0, lenght_data := len(self.data), lenght_seg):
@@ -58,15 +60,14 @@ class CryptMessage:
                 segment = self.data[sep:]
 
             frame = segment
-            verificador = sha256(frame).digest()
             packet_prefix = CryptMessage.__rand_prefix()
-            packet = packet_prefix + verificador + frame
+            packet = packet_prefix + frame
 
             value_packet = int.from_bytes(packet, 'big')
             calc = pow(value_packet, self.key.e, self.key.n)
             data += int.to_bytes(calc, lenght_key, 'big')
             
-        self.data = data
+        self.data = checksum + data
         return True
             
     def decrypt(self) -> bool:
@@ -74,29 +75,27 @@ class CryptMessage:
             return False
         
         lenght_key = length_int(self.key.n)
-        lenght_sep = lenght_key - 72
+        work_data = self.data[32:]
+        checksum = self.data[:32]
         data = b''
         
-        for sep in range(0, lenght_data := len(self.data), lenght_key):
+        for sep in range(0, lenght_data := len(work_data), lenght_key):
             if (sep + lenght_key) < lenght_data:
-                segment = self.data[sep: sep + lenght_key]
+                segment = work_data[sep: sep + lenght_key]
                 
             else:
-                segment = self.data[sep:]
+                segment = work_data[sep:]
 
             value_segment = int.from_bytes(segment, 'big')
             calc = pow(value_segment, self.key.d, self.key.n)
             packet = int.to_bytes(calc, length_int(calc), 'big')
             
-            checksum = packet[32:64]
-            message = packet[64:]
-            
-            if checksum != sha256(message).digest():
-                print("Falhou o check sum")
-            
+            message = packet[32:]            
             data += message
 
-            
+        if checksum != sha256(data).digest():
+            raise error("Erro na Descriptografia da Mensagem")
+
         self.data = data
         return True
             
