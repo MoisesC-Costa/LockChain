@@ -1,6 +1,11 @@
 ## Criptografia de Algoritmo RSA :closed_lock_with_key:
 
-### Dependencias :package:
+### Descrição :page_with_curl:
+
+- Programa que implementa criptografia de chave publica.
+- Suporta arquivos, mas é recomendável o uso de arquivos < 1Mb de tamanho.
+
+### Dependências :package:
 
 - RSA
   - python -m pip install rsa

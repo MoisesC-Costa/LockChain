@@ -6,12 +6,6 @@ from hashlib import sha256
 import secrets
 
 class CryptMessage:
-    def __rand_prefix() -> bytes:
-        while True:
-            value_prefix = secrets.randbits(32 * 8)
-            
-            if len(data := int_bytes(value_prefix)) == 32:
-                return data
 
     def __init__(self, data : bytes = b"", key : Union[PrivateKey, PublicKey] = None) -> None:
         self.data = data
@@ -59,9 +53,8 @@ class CryptMessage:
             else:
                 segment = self.data[sep:]
 
-            frame = segment
             packet_prefix = CryptMessage.__rand_prefix()
-            packet = packet_prefix + frame
+            packet = packet_prefix + segment
 
             value_packet = int.from_bytes(packet, 'big')
             calc = pow(value_packet, self.key.e, self.key.n)
@@ -98,6 +91,13 @@ class CryptMessage:
 
         self.data = data
         return True
+
+    def __rand_prefix() -> bytes:
+        while True:
+            value_prefix = secrets.randbits(32 * 8)
+            
+            if len(data := int_bytes(value_prefix)) == 32:
+                return data
             
             
 class CryptFile(CryptMessage):
