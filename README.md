@@ -2,8 +2,7 @@
 
 ### Descrição :page_with_curl:
 
-- Programa que implementa criptografia de chave publica.
-- Suporta arquivos, mas é recomendável o uso de arquivos < 1Mb.
+- Modulo Python para criptografia de dados de chave publica.
 
 ### Dependências :package:
 
